@@ -5,6 +5,7 @@ import WebinarCall from "./views/WebinarCall";
 function App() {
   const [currentUser, setCurrentUser] = useState(null)
   const [nameInput, setNameInput] = useState('')
+  const [copyUrl, setCopyUrl] = useState('')
   
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -22,12 +23,15 @@ function App() {
     <AppContainer>
       <nav>
         <h2>Demo</h2>
+        {copyUrl &&
+          <h3>{copyUrl}</h3>
+        }
         {currentUser &&
           <h2>Name: {currentUser.username}</h2>
         }
       </nav>
       {currentUser ?
-        <WebinarCall currentUser={currentUser} />
+        <WebinarCall currentUser={currentUser} setCopyUrl={setCopyUrl} />
         :
         <>
           <h3>Username : </h3>

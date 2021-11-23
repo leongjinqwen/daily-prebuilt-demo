@@ -22,7 +22,7 @@ const CALL_OPTIONS = {
 
 const DEFAULT_HEIGHT = 400;
 
-const WebinarCall = ({ currentUser }) => {
+const WebinarCall = ({ currentUser, setCopyUrl }) => {
   const videoRef = useRef(null);
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
   const [callframe, setCallframe] = useState(null);
@@ -52,7 +52,6 @@ const WebinarCall = ({ currentUser }) => {
     const participantUpdated = (e) => {
       console.log("someone join")
       if (!["call", "left-call"].includes(currentView)) {
-        console.log("join inside!!!")
         setCurrentView("call");
         setHeight((videoRef?.current?.clientWidth || 500) * 0.75);
       }
@@ -60,6 +59,7 @@ const WebinarCall = ({ currentUser }) => {
     const leftMeeting = () => {
       console.log("left")
       setRoomInfo(null);
+      setCopyUrl('')
       setCurrentView("left-call");
     }
 
@@ -86,11 +86,13 @@ const WebinarCall = ({ currentUser }) => {
           username: currentUser.username,
           url: room.url,
         })
+        setCopyUrl(room.url)
         joinRoom()
       })
       .catch((error) => {
         console.log('Error creating room', error);
         setRoomInfo(null);
+        setCopyUrl('')
       })
   }, [])
 
@@ -104,6 +106,7 @@ const WebinarCall = ({ currentUser }) => {
       ...roomInfo, 
       url: urlInput,
     })
+    setCopyUrl(urlInput)
     setUrlInput("")
     joinRoom()
   }
