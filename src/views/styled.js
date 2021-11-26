@@ -6,7 +6,6 @@ export const PageStyle = styled.div`
   height: 100%;
   background-color: #f7f9fa;
   display: flex;
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
   font-size: 12px;
@@ -58,5 +57,37 @@ export const StartContainer = styled.div`
     margin: 0;
     border-radius: 0;
   }
+`
+export const LoungeContainer = styled.div`
+  width: 100%;
+  height: calc(100vh - 52px);
+  background-color: #131216;
+  color: ghostwhite;
+  padding: 0 18px;
 
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 30px;
+    grid-auto-rows: max-content;
+  }
+  .room {
+    background-color: #23212d;
+    text-align: center;
+  }
+  .action-btn {
+    cursor: pointer;
+    font-weight: 500;
+  }
+  ul {
+    text-align: left;
+    width: 75%;
+    margin: 0 auto;
+    strong {
+      text-decoration: underline;
+    }
+    p {
+      margin: 0;
+    }
+  }
 `

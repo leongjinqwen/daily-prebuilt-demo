@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
+import { Switch, Route } from "react-router-dom";
 import styled from "styled-components";
-import WebinarCall from "./views/WebinarCall";
+import { routes } from './routes';
+import Home from './views/Home';
+import Lounge from './views/Lounge';
+// import WebinarCall from "./views/WebinarCall";
 
 function App() {
+  // const [currentUser, setCurrentUser] = useState({username: "Jinq Wen"})
   const [currentUser, setCurrentUser] = useState(null)
-  const [nameInput, setNameInput] = useState('')
   const [copyUrl, setCopyUrl] = useState('')
   
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (nameInput.length === 0) {
-      alert("Please enter your name.")
-      return
-    }
-    setCurrentUser({
-      ...currentUser,
-      username: nameInput
-    })
-  }
-
   return (
     <AppContainer>
       <nav>
@@ -27,20 +19,15 @@ function App() {
           <h3>{copyUrl}</h3>
         }
         {currentUser &&
-          <h2>Name: {currentUser.username}</h2>
+          <h2>Hi, {currentUser.username}!</h2>
         }
       </nav>
-      {currentUser ?
-        <WebinarCall currentUser={currentUser} setCopyUrl={setCopyUrl} />
-        :
-        <>
-          <h3>Username : </h3>
-          <form onSubmit={handleSubmit}>
-            <input value={nameInput} onChange={(e)=>setNameInput(e.target.value)} />
-            <button type="submit">Confirm</button>
-          </form>
-        </>
-      }
+      <Switch>
+        <Route exact path={routes.home} component={(props) => <Home setCurrentUser={setCurrentUser} currentUser={currentUser} {...props} />} />
+
+        {/* <Route exact path={routes.room} component={(props) => <WebinarCall setCopyUrl={setCopyUrl} currentUser={currentUser} {...props} />} /> */}
+        <Route exact path={routes.lounge} component={(props) => <Lounge setCopyUrl={setCopyUrl} currentUser={currentUser} {...props} />} />
+      </Switch>
     </AppContainer>
   )
 }

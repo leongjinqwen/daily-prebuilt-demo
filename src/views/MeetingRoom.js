@@ -1,8 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import DailyIframe from "@daily-co/daily-js";
 import { VideoContainer, Callframe, PageStyle } from "./styled";
-import api from '../../src/utils/videoCallHelper'
-import StartButton from "./StartButton";
 import { Redirect } from "react-router";
 import { routes } from "../routes";
 
@@ -18,30 +16,20 @@ const CALL_OPTIONS = {
   },
   showLeaveButton: true,
   showFullscreenButton: true,
-  //   showLocalVideo: false,
-  //   showParticipantsBar: false,
 }
 
 const DEFAULT_HEIGHT = 400;
 
-const WebinarCall = ({ currentUser, setCopyUrl }) => {
+const MeetingRoom = ({ currentUser, roomUrl, endCall }) => {
   const videoRef = useRef(null);
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
   const [callframe, setCallframe] = useState(null);
   const [currentView, setCurrentView] = useState("loading"); // loading | call | waiting | error | left-call
-  const [urlInput, setUrlInput] = useState("")
-  const [roomInfo, setRoomInfo] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("user:", currentUser)
-    console.log("trigger")
-    console.log("videoref: ",videoRef)
-    console.log("room info: ",roomInfo)
-    console.log("callframe: ", callframe)
-    console.log("loading: ", isLoading)
-    if (!videoRef?.current || !roomInfo?.url || callframe) return;
-    CALL_OPTIONS.url = roomInfo?.url
+    if (!videoRef?.current || !roomUrl || callframe) return;
+    CALL_OPTIONS.url = roomUrl
 
     const newCallframe = DailyIframe.createFrame(
       videoRef.current,
@@ -49,7 +37,7 @@ const WebinarCall = ({ currentUser, setCopyUrl }) => {
     )
 
     setCallframe(newCallframe);
-    console.log("hit here")
+    
     const joinedMeeting = () => {
       console.log("join")
       if (currentView !== "call") {
@@ -66,9 +54,8 @@ const WebinarCall = ({ currentUser, setCopyUrl }) => {
     }
     const leftMeeting = () => {
       console.log("left")
-      setRoomInfo(null);
-      setCopyUrl('')
       setCurrentView("left-call");
+      endCall()
     }
 
     newCallframe
@@ -81,57 +68,9 @@ const WebinarCall = ({ currentUser, setCopyUrl }) => {
         .off("joined-meeting", joinedMeeting)
         // .off("left-meeting", leftMeeting)
     };
-  }, [videoRef, callframe, roomInfo]);
-
-  const createCall = useCallback(() => {
-    setIsLoading(true)
-
-    return api
-      .createRoom()
-      .then((room) => {
-        console.log(room.url)
-        setRoomInfo({
-          username: currentUser.username,
-          url: room.url,
-        })
-        setCopyUrl(room.url)
-        // joinRoom()
-      })
-      .catch((error) => {
-        console.log('Error creating room', error);
-        setRoomInfo(null);
-        setCopyUrl('')
-      })
-  }, [])
-
-  const handleUrlInput = (e) => {
-    setUrlInput(e.target.value)
-  }
-
-  const submitUrl = () => {
-    if (urlInput === "") {
-      alert("Please enter room url.")
-    } else {
-      setIsLoading(true)
-      console.log("setloading to true")
-      setRoomInfo({
-        username: currentUser.username, 
-        url: urlInput.trim(),
-      })
-      console.log("setRoomInfo:", {
-        username: currentUser.username, 
-        url: urlInput.trim(),
-      })
-      setCopyUrl(urlInput.trim())
-      setUrlInput("")
-      // joinRoom()
-    }
-  }
-  console.log(isLoading)
-  console.log(roomInfo)
+  }, [videoRef, callframe]);
 
   const joinRoom = useCallback(() => {
-    console.log("trigger Join Room")
     if (!videoRef?.current || !callframe) return;
     callframe
       .join({ userName: currentUser.username })
@@ -142,22 +81,20 @@ const WebinarCall = ({ currentUser, setCopyUrl }) => {
         console.log("join meeting successful");
       })
       .catch((err) => console.error(err));
-  }, [roomInfo, videoRef, callframe]);
+  }, [videoRef, callframe]);
 
   useEffect(() => {
-
     const state = callframe?.meetingState();
     console.log("state: ",state)
     if (state === "joined-meeting") {
       setCurrentView("call");
     }
-    if (!roomInfo) return;
-    console.log("Hit check state")
+
     setCurrentView("loading");
     if (callframe) {
       joinRoom();
     }
-  }, [roomInfo, videoRef, callframe, joinRoom]);
+  }, [videoRef, callframe, joinRoom]);
 
   useEffect(() => {
     let timeout;
@@ -187,10 +124,8 @@ const WebinarCall = ({ currentUser, setCopyUrl }) => {
       <VideoContainer height={height} hidden={currentView !== "call"}>
         <Callframe ref={videoRef} />
       </VideoContainer>
-      {isLoading && currentView !== "call" ?
+      {(isLoading && currentView !== "call") &&
         <p>Loading...</p>
-        :
-        <StartButton hidden={currentView === "call"} handleCreateRoom={createCall} handleUrlInput={handleUrlInput} urlInput={urlInput} submitUrl={submitUrl} />
       }
     </PageStyle>
   )
@@ -198,4 +133,4 @@ const WebinarCall = ({ currentUser, setCopyUrl }) => {
 
 
 
-export default WebinarCall;
+export default MeetingRoom;
