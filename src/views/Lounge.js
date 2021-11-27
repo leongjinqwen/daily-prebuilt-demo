@@ -4,6 +4,7 @@ import { LoungeContainer } from "./styled";
 import api from '../../src/utils/videoCallHelper'
 import { routes } from "../routes";
 import MeetingRoom from "./MeetingRoom";
+import Avatar from 'react-avatar'
 
 
 const Lounge = ({ currentUser }) => {
@@ -61,16 +62,20 @@ const Lounge = ({ currentUser }) => {
       <MeetingRoom currentUser={currentUser} roomUrl={meetingUrl} endCall={endCall} />
       :
       <LoungeContainer>
-        <h1>Lounge</h1>
+        <header>
+          <h1>Lounge</h1>
+          <h3>Interact with other attendees in the lounge!</h3>
+        </header>
         <div className="rooms-grid">
           {rooms?.map((room, idx) => (
             <div className="room" key={`room-${room.name}`}>
               <h4>Room: {idx+1} (Max: {room.config.max_participants})</h4>
               {(participants && participants[room.name]?.length > 0) &&
                 <ul>
-                  <strong>Current participant:</strong>
                   {participants[room.name]?.map((user, index)=>(
-                    <p key={user.id}>{index+1}. {user.userName}</p>
+                    <div key={user.id}>
+                      <Avatar name={user.userName} size='40' round />
+                    </div>
                   ))}
                 </ul>
               }

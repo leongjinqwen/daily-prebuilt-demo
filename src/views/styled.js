@@ -1,5 +1,14 @@
 import styled from "styled-components";
 
+const _MOBILE_BP = '1023px'
+const _NAVBAR_HEIGHT = '52px'
+
+const SIZES = {
+  navHeight: _NAVBAR_HEIGHT,
+  mobileBreakpoint: _MOBILE_BP,
+
+  mobile: `@media (max-width: ${_MOBILE_BP})`,
+}
 
 export const PageStyle = styled.div`
   width: 100%;
@@ -60,11 +69,19 @@ export const StartContainer = styled.div`
 `
 export const LoungeContainer = styled.div`
   width: 100%;
-  height: calc(100vh - 52px);
+  min-height: calc(100vh - 52px);
+  height: 100%;
   background-color: #131216;
   color: ghostwhite;
   padding: 0 18px;
+  overflow-y: scroll;
 
+  header {
+    background-color: #23212d;
+    border-radius: 8px;
+    padding: 32px;
+    margin: 24px auto;
+  }
   .rooms-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -73,7 +90,12 @@ export const LoungeContainer = styled.div`
   }
   .room {
     background-color: #23212d;
+    border-radius: 8px;
     text-align: center;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   .action-btn {
     cursor: pointer;
@@ -88,6 +110,11 @@ export const LoungeContainer = styled.div`
     }
     p {
       margin: 0;
+    }
+  }
+  ${SIZES.mobile} {
+    .rooms-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 `
