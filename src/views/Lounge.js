@@ -28,7 +28,7 @@ const Lounge = ({ currentUser }) => {
     return api
       .fetchParticipants()
       .then((result) => {
-        console.log("participant",result)
+        // console.log("participant",result)
         setParticipants(result)
       })
       .catch((error) => {
@@ -40,7 +40,7 @@ const Lounge = ({ currentUser }) => {
     updateParticipants()
     const intervalId = setInterval(() => {
       updateParticipants()
-    }, 10000)
+    }, 5000)
     return () => clearInterval(intervalId)
   }, [])
 
@@ -71,15 +71,18 @@ const Lounge = ({ currentUser }) => {
             <div className="room" key={`room-${room.name}`}>
               <h4>Room: {idx+1} (Max: {room.config.max_participants})</h4>
               {(participants && participants[room.name]?.length > 0) &&
-                <ul>
-                  {participants[room.name]?.map((user, index)=>(
+                <div className="participants-container">
+                  {participants[room.name]?.sort((a,b)=>new Date(a.joinTime)-new Date(b.joinTime)).map((user, index)=>(
                     <div key={user.id}>
                       <Avatar name={user.userName} size='40' round />
                     </div>
                   ))}
-                </ul>
+                </div>
               }
-              <p className="action-btn" onClick={()=>enterRoom(room.url)}>Take a seat</p>
+              {participants[room.name]?.length >= room.config.max_participants 
+                ? <p><strong>FULL</strong></p>
+                : <p className="action-btn" onClick={()=>enterRoom(room.url)}>Take a seat</p>
+              }
             </div>
           ))}
         </div>

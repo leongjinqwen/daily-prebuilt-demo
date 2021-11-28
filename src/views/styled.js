@@ -101,10 +101,13 @@ export const LoungeContainer = styled.div`
     cursor: pointer;
     font-weight: 500;
   }
-  ul {
+  div.participants-container {
     text-align: left;
-    width: 75%;
+    width: 80%;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
     strong {
       text-decoration: underline;
     }
