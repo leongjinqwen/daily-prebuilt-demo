@@ -72,11 +72,15 @@ const Lounge = ({ currentUser }) => {
               <h4>Room: {idx+1} (Max: {room.config.max_participants})</h4>
               {(participants && participants[room.name]?.length > 0) &&
                 <div className="participants-container">
-                  {participants[room.name]?.sort((a,b)=>new Date(a.joinTime)-new Date(b.joinTime)).map((user, index)=>(
-                    <div key={user.id}>
-                      <Avatar name={user.userName} size='40' round />
-                    </div>
-                  ))}
+                  {participants[room.name]?.sort((a,b)=>new Date(a.joinTime)-new Date(b.joinTime)).map((user, index)=>{
+                    if (index < room.config.max_participants) 
+                      return (
+                        <div key={user.id}>
+                          <Avatar name={user.userName} size='40' round />
+                        </div>
+                      )
+                    else return null
+                  })}
                 </div>
               }
               {participants[room.name]?.length >= room.config.max_participants 

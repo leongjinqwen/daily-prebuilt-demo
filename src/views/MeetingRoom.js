@@ -57,11 +57,17 @@ const MeetingRoom = ({ currentUser, roomUrl, endCall }) => {
       setCurrentView("left-call");
       endCall()
     }
+    const handleError = (err) => {
+      console.log(err)
+      alert(err.errorMsg)
+      setCurrentView("left-call");
+    }
 
     newCallframe
       .on("joined-meeting", joinedMeeting)
       .on("participant-updated", (e) => participantUpdated(e))
       .on("left-meeting", leftMeeting)
+      .on("error", handleError);
 
     return () => {
       newCallframe
@@ -80,7 +86,9 @@ const MeetingRoom = ({ currentUser, roomUrl, endCall }) => {
         setCurrentView("call");
         console.log("join meeting successful");
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err)
+      });
   }, [videoRef, callframe]);
 
   useEffect(() => {
