@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Redirect, useLocation } from "react-router";
 import { LoungeContainer } from "./styled";
-import api from '../../src/utils/videoCallHelper'
+import api from '../utils/videoCallHelper'
 import { routes } from "../routes";
 import MeetingRoom from "./MeetingRoom";
-import Avatar from 'react-avatar'
+import { CurrentUserType } from "../App";
+import Participants from "./Participants";
 
 
-const Lounge = ({ currentUser }) => {
+const Lounge: FunctionComponent<CurrentUserType> = ({ currentUser }) => {
   const { search } = useLocation();
   const [rooms, setRooms] = useState([])
   const [participants, setParticipants] = useState(null)
@@ -19,10 +20,9 @@ const Lounge = ({ currentUser }) => {
     if (search && search.match(/^[?t=*+]/)) {
     // remove the first few characters to isolate the token
       const token = search.replace("?t=", "");
-      console.log("admin")
 
       // validate the token from the URL if supplied
-      return api
+      api
         .verifyToken(token)
         .then((result) => {
           console.log(result)
@@ -35,15 +35,13 @@ const Lounge = ({ currentUser }) => {
           console.log('Error verify token', error);
         })
     } else {
-      console.log("regular attendee")
-
       // set the participant to a regular attendee
       setMeetingToken("")
     }
   }, [search]);
 
   useEffect(() => {
-    return api
+    api
       .fetchRooms()
       .then((result) => {
         setRooms(result.data)
@@ -53,11 +51,10 @@ const Lounge = ({ currentUser }) => {
       })
   }, []);
 
-  const updateParticipants = () => {
-    return api
+  const updateParticipants = (): void => {
+    api
       .fetchParticipants()
       .then((result) => {
-        // console.log("participant",result)
         setParticipants(result)
       })
       .catch((error) => {
@@ -67,18 +64,19 @@ const Lounge = ({ currentUser }) => {
 
   useEffect(() => {
     updateParticipants()
+    
     const intervalId = setInterval(() => {
       updateParticipants()
     }, 5000)
+
     return () => clearInterval(intervalId)
   }, [])
 
-  const enterRoom = (url) => {
-    console.log(url)
+  const enterRoom = (url: string): void => {
     setStartVideoCall(true)
     setMeetingUrl(url)
   }
-  const endCall = () => {
+  const endCall = (): void => {
     setStartVideoCall(false)
     setMeetingUrl("")
   }
@@ -100,17 +98,7 @@ const Lounge = ({ currentUser }) => {
             <div className="room" key={`room-${room.name}`}>
               <h4>Room: {idx+1} (Max: {room.config.max_participants})</h4>
               {(participants && participants[room.name]?.length > 0) &&
-                <div className="participants-container">
-                  {participants[room.name]?.sort((a,b)=>new Date(a.joinTime)-new Date(b.joinTime)).map((user, index)=>{
-                    if (index < room.config.max_participants) 
-                      return (
-                        <div key={user.id}>
-                          <Avatar name={user.userName} size='40' round />
-                        </div>
-                      )
-                    else return null
-                  })}
-                </div>
+                <Participants users={participants[room.name]} maxLimit={room.config.max_participants} />
               }
               {participants && participants[room.name]?.length >= room.config.max_participants 
                 ? <p><strong>FULL</strong></p>

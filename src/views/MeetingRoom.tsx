@@ -1,10 +1,20 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { FunctionComponent, useRef, useEffect, useState, useCallback } from "react";
 import DailyIframe from "@daily-co/daily-js";
 import { VideoContainer, Callframe, PageStyle } from "./styled";
 import { Redirect } from "react-router";
 import { routes } from "../routes";
+import { CurrentUserType } from "../App";
 
-const CALL_OPTIONS = {
+interface OptionsProps {
+  iframeStyle: {
+    [propName:string]: string 
+  }
+  showLeaveButton: boolean
+  showFullscreenButton: boolean
+  url?: string
+}
+
+const CALL_OPTIONS: OptionsProps = {
   iframeStyle: {
     width: "100%",
     height: "100%",
@@ -16,13 +26,25 @@ const CALL_OPTIONS = {
   },
   showLeaveButton: true,
   showFullscreenButton: true,
+  url: ''
 }
 
-const DEFAULT_HEIGHT = 400;
+const DEFAULT_HEIGHT: number = 400;
 
-const MeetingRoom = ({ currentUser, roomUrl, endCall, meetingToken }) => {
+interface EndCallFunc {
+  (): void
+}
+
+interface MeetingRoomProps {
+  currentUser: CurrentUserType
+  meetingToken: string
+  roomUrl: string
+  endCall: EndCallFunc
+}
+
+const MeetingRoom: FunctionComponent<MeetingRoomProps> = ({ currentUser, roomUrl, endCall, meetingToken }) => {
   const videoRef = useRef(null);
-  const [height, setHeight] = useState(DEFAULT_HEIGHT);
+  const [height, setHeight] = useState<number>(DEFAULT_HEIGHT);
   const [callframe, setCallframe] = useState(null);
   const [currentView, setCurrentView] = useState("loading"); // loading | call | waiting | error | left-call
   const [isLoading, setIsLoading] = useState(true);
