@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Redirect, useLocation } from "react-router";
 import { LoungeContainer } from "./styled";
 import api from '../../src/utils/videoCallHelper'
 import { routes } from "../routes";
@@ -8,10 +8,39 @@ import Avatar from 'react-avatar'
 
 
 const Lounge = ({ currentUser }) => {
+  const { search } = useLocation();
   const [rooms, setRooms] = useState([])
   const [participants, setParticipants] = useState(null)
   const [startVideoCall, setStartVideoCall] = useState(false)
   const [meetingUrl, setMeetingUrl] = useState("")
+  const [meetingToken, setMeetingToken] = useState("")
+
+  useEffect(() => {
+    if (search && search.match(/^[?t=*+]/)) {
+    // remove the first few characters to isolate the token
+      const token = search.replace("?t=", "");
+      console.log("admin")
+
+      // validate the token from the URL if supplied
+      return api
+        .verifyToken(token)
+        .then((result) => {
+          console.log(result)
+          if (result.is_owner) {
+            setMeetingToken(token)
+            return;
+          }
+        })
+        .catch((error) => {
+          console.log('Error verify token', error);
+        })
+    } else {
+      console.log("regular attendee")
+
+      // set the participant to a regular attendee
+      setMeetingToken("")
+    }
+  }, [search]);
 
   useEffect(() => {
     return api
@@ -59,7 +88,7 @@ const Lounge = ({ currentUser }) => {
   }
   return (
     startVideoCall ? 
-      <MeetingRoom currentUser={currentUser} roomUrl={meetingUrl} endCall={endCall} />
+      <MeetingRoom currentUser={currentUser} roomUrl={meetingUrl} endCall={endCall} meetingToken={meetingToken} />
       :
       <LoungeContainer>
         <header>
@@ -83,7 +112,7 @@ const Lounge = ({ currentUser }) => {
                   })}
                 </div>
               }
-              {participants[room.name]?.length >= room.config.max_participants 
+              {participants && participants[room.name]?.length >= room.config.max_participants 
                 ? <p><strong>FULL</strong></p>
                 : <p className="action-btn" onClick={()=>enterRoom(room.url)}>Take a seat</p>
               }

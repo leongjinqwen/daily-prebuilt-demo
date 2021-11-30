@@ -72,4 +72,19 @@ async function fetchParticipants() {
     rooms = await response.json();
   return rooms;
 }
-export default { createRoom, fetchRooms, fetchParticipants };
+
+async function verifyToken(token) {
+  let response = await fetch(`${API_URL}/meeting-tokens/${token}`, {
+    method: "GET",
+    mode: 'cors',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + DAILY_TOKEN,
+      'Host': 'api.producthunt.com'
+    }
+  }),
+    config = await response.json();
+  return config;
+}
+export default { createRoom, fetchRooms, fetchParticipants, verifyToken };

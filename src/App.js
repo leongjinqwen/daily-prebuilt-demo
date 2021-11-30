@@ -25,8 +25,7 @@ function App() {
       <Switch>
         <Route exact path={routes.home} component={(props) => <Home setCurrentUser={setCurrentUser} currentUser={currentUser} {...props} />} />
 
-        {/* <Route exact path={routes.room} component={(props) => <WebinarCall setCopyUrl={setCopyUrl} currentUser={currentUser} {...props} />} /> */}
-        <Route exact path={routes.lounge} component={(props) => <Lounge setCopyUrl={setCopyUrl} currentUser={currentUser} {...props} />} />
+        <Route path="/lounge" component={(props) => <Lounge currentUser={currentUser} {...props} />} />
       </Switch>
     </AppContainer>
   )

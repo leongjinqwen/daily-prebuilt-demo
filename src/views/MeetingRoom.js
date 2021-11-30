@@ -20,13 +20,13 @@ const CALL_OPTIONS = {
 
 const DEFAULT_HEIGHT = 400;
 
-const MeetingRoom = ({ currentUser, roomUrl, endCall }) => {
+const MeetingRoom = ({ currentUser, roomUrl, endCall, meetingToken }) => {
   const videoRef = useRef(null);
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
   const [callframe, setCallframe] = useState(null);
   const [currentView, setCurrentView] = useState("loading"); // loading | call | waiting | error | left-call
   const [isLoading, setIsLoading] = useState(true);
-
+    
   useEffect(() => {
     if (!videoRef?.current || !roomUrl || callframe) return;
     CALL_OPTIONS.url = roomUrl
@@ -79,7 +79,10 @@ const MeetingRoom = ({ currentUser, roomUrl, endCall }) => {
   const joinRoom = useCallback(() => {
     if (!videoRef?.current || !callframe) return;
     callframe
-      .join({ userName: currentUser.username })
+      .join({ 
+        userName: currentUser.username,
+        token: meetingToken
+      })
       .then(() => {
         setIsLoading(false)
         setHeight((videoRef?.current?.clientWidth || 500) * 0.75);
