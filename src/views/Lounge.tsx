@@ -7,10 +7,20 @@ import MeetingRoom from "./MeetingRoom";
 import { CurrentUserType } from "../App";
 import Participants from "./Participants";
 
+interface RoomType {
+  id: string
+  name: string
+  url: string
+  config: {
+    max_participants: number
+    [key:string]: any
+  }
+  [key:string]: any
+}
 
 const Lounge: FunctionComponent<CurrentUserType> = ({ currentUser }) => {
   const { search } = useLocation();
-  const [rooms, setRooms] = useState([])
+  const [rooms, setRooms] = useState<Array<RoomType>>([])
   const [participants, setParticipants] = useState(null)
   const [startVideoCall, setStartVideoCall] = useState(false)
   const [meetingUrl, setMeetingUrl] = useState("")
@@ -25,7 +35,6 @@ const Lounge: FunctionComponent<CurrentUserType> = ({ currentUser }) => {
       api
         .verifyToken(token)
         .then((result) => {
-          console.log(result)
           if (result.is_owner) {
             setMeetingToken(token)
             return;
@@ -51,7 +60,7 @@ const Lounge: FunctionComponent<CurrentUserType> = ({ currentUser }) => {
       })
   }, []);
 
-  const updateParticipants = (): void => {
+  const updateParticipants = () => {
     api
       .fetchParticipants()
       .then((result) => {
@@ -72,11 +81,11 @@ const Lounge: FunctionComponent<CurrentUserType> = ({ currentUser }) => {
     return () => clearInterval(intervalId)
   }, [])
 
-  const enterRoom = (url: string): void => {
+  const enterRoom = (url: string) => {
     setStartVideoCall(true)
     setMeetingUrl(url)
   }
-  const endCall = (): void => {
+  const endCall = () => {
     setStartVideoCall(false)
     setMeetingUrl("")
   }

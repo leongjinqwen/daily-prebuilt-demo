@@ -3,11 +3,11 @@ import Avatar from 'react-avatar'
 
 interface ParticipantsProps {
   maxLimit: number
-  users: {
+  users: Array<{
     id: string
     userName: string
     joinTime: string
-  }[] 
+  }>
 }
 
 const Participants: FunctionComponent<ParticipantsProps> = ({ users, maxLimit }) => {

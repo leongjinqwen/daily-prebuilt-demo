@@ -79,7 +79,7 @@ const MeetingRoom: FunctionComponent<MeetingRoomProps> = ({ currentUser, roomUrl
       setCurrentView("left-call");
       endCall()
     }
-    const handleError = (err) => {
+    const handleError = (err: any) => {
       console.log(err)
       alert(err.errorMsg)
       setCurrentView("left-call");
@@ -111,7 +111,7 @@ const MeetingRoom: FunctionComponent<MeetingRoomProps> = ({ currentUser, roomUrl
         setCurrentView("call");
         console.log("join meeting successful");
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error(err)
       });
   }, [videoRef, callframe]);
@@ -130,7 +130,7 @@ const MeetingRoom: FunctionComponent<MeetingRoomProps> = ({ currentUser, roomUrl
   }, [videoRef, callframe, joinRoom]);
 
   useEffect(() => {
-    let timeout;
+    let timeout: ReturnType<typeof setTimeout>
 
     // handles setting the iframe's height on window resize to maintain aspect ratio
     const updateSize = () => {
